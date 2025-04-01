@@ -1,4 +1,5 @@
 #include "client.h"
+#include <readline/readline.h>
 
 int main(void)
 {
@@ -15,21 +16,16 @@ int main(void)
 	/* ---------------- LOGGING ---------------- */
 
 	logger = iniciar_logger();
-	log_info(logger, "Hola! Soy un logggggg");
-
-	// Usando el logger creado previamente
-	// Escribi: "Hola! Soy un log"
-
 
 	/* ---------------- ARCHIVOS DE CONFIGURACION ---------------- */
 
 	config = iniciar_config();
 
-	// Usando el config creado previamente, leemos los valores del config y los 
-	// dejamos en las variables 'ip', 'puerto' y 'valor'
+	ip = config_get_string_value(config, "IP");
+	puerto = config_get_string_value(config, "PUERTO");
+	valor = config_get_string_value(config, "CLAVE");
 
-	// Loggeamos el valor de config
-
+	log_info(logger, "VALOR leido de config: %s", valor);
 
 	/* ---------------- LEER DE CONSOLA ---------------- */
 
@@ -51,18 +47,25 @@ int main(void)
 
 	/*---------------------------------------------------PARTE 5-------------------------------------------------------------*/
 	// Proximamente
+
+	printf ("El program Termino");
 }
 
 t_log* iniciar_logger(void)
 {
-	t_log* nuevo_logger = log_create("tp0.log", "LOGGER_TP0", 1 , LOG_LEVEL_INFO);
+	t_log* nuevo_logger = log_create("cliente.log", "CLIENTE_LOGGER", 1 , LOG_LEVEL_INFO);
 
 	return nuevo_logger;
 }
 
 t_config* iniciar_config(void)
 {
-	t_config* nuevo_config;
+	t_config* nuevo_config = config_create("cliente.config");
+
+	if(nuevo_config == NULL) {
+		perror("Error al intentar cargar el config");
+		exit(EXIT_FAILURE);
+	}
 
 	return nuevo_config;
 }
@@ -71,13 +74,14 @@ void leer_consola(t_log* logger)
 {
 	char* leido;
 
-	// La primera te la dejo de yapa
 	leido = readline("> ");
 
-	// El resto, las vamos leyendo y logueando hasta recibir un string vacío
+	while (strcmp(leido, "") != 0){
+		log_info(logger, "mensaje Leido: %s", leido);
+		leido = readline("> ");
+	}
 
-
-	// ¡No te olvides de liberar las lineas antes de regresar!
+	free(leido);
 
 }
 
@@ -97,6 +101,7 @@ void paquete(int conexion)
 void terminar_programa(int conexion, t_log* logger, t_config* config)
 {
 	log_destroy(logger);
+	config_destroy(config);
 	/* Y por ultimo, hay que liberar lo que utilizamos (conexion, log y config) 
 	  con las funciones de las commons y del TP mencionadas en el enunciado */
 }
