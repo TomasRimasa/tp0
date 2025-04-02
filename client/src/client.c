@@ -13,12 +13,7 @@ int main(void)
 	t_log* logger;
 	t_config* config;
 
-	/* ---------------- LOGGING ---------------- */
-
 	logger = iniciar_logger();
-
-	/* ---------------- ARCHIVOS DE CONFIGURACION ---------------- */
-
 	config = iniciar_config();
 
 	ip = config_get_string_value(config, "IP");
@@ -26,8 +21,6 @@ int main(void)
 	valor = config_get_string_value(config, "CLAVE");
 
 	log_info(logger, "VALOR leido de config: %s", valor);
-
-	/* ---------------- LEER DE CONSOLA ---------------- */
 
 	leer_consola(logger);
 
